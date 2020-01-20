@@ -12,6 +12,6 @@ public class GretingController {
     @GetMapping("/")
     public String getGreting(@RequestParam(name = "name") String name, Model model) {
         model.addAttribute("name", name);
-        return "grett";
+        return "index";
     }
 }
