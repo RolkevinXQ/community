@@ -10,6 +10,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * 调用GitHub登录认证接口授权成功之后的回调地址，用于接收code，state
  */
@@ -25,7 +27,7 @@ public class GitHubAuthorizeController {
     private String redirectUri;
     @GetMapping("/authcallback")
     public String oauthCallBack(@RequestParam(name="code") String code,
-                                @RequestParam(name="state")String state, Model model){
+                                @RequestParam(name="state")String state, HttpServletRequest request){
         AccessTokenDTO accessTokenDTO = new AccessTokenDTO(clientId,
                 clientSecret,
                 code,
@@ -35,6 +37,12 @@ public class GitHubAuthorizeController {
         String token = gitHubProvider.getAccessToken(accessTokenDTO);
         GithubUser githubUser = gitHubProvider.getGithubUser(token);
         System.out.println(githubUser.toString());
-        return "index";
+        if(githubUser!=null){
+            request.getSession().setAttribute("user",githubUser);
+            return "redirect:/";
+        }else{
+            return "redirect:/";
+        }
+
     }
 }
