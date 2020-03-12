@@ -4,6 +4,7 @@ import com.rolkevin.community.dto.AccessTokenDTO;
 import com.rolkevin.community.dto.GithubUser;
 import com.rolkevin.community.provider.GitHubProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,14 +17,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class GitHubAuthorizeController {
     @Autowired
     private GitHubProvider gitHubProvider;
-
+    @Value("${github.client.id}")
+    private String clientId;
+    @Value("${github.client.secret}")
+    private String clientSecret;
+    @Value("${github.redirect.uri}")
+    private String redirectUri;
     @GetMapping("/authcallback")
     public String oauthCallBack(@RequestParam(name="code") String code,
                                 @RequestParam(name="state")String state, Model model){
-        AccessTokenDTO accessTokenDTO = new AccessTokenDTO("a9f956c1568d02cbd7d6",
-                "5e973c560bfcfd196db8839b8806bb66ef739735",
+        AccessTokenDTO accessTokenDTO = new AccessTokenDTO(clientId,
+                clientSecret,
                 code,
-                "http://localhost:8087/authcallback",
+                redirectUri,
                 state);
         //String token = gitHubProvider.getAccessToken(new AccessTokenDTO("","","","","",""));
         String token = gitHubProvider.getAccessToken(accessTokenDTO);
